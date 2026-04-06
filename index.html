@@ -1,29 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Voice AI | Portfolio Assistant</title>
+  <meta name="theme-color" content="#0f172a">
+  <title>InterviewPro HR | AI-Powered Candidate Assessment</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>🎙️ AI Voice Assistant</h1>
-    <p>Hold the mic button & speak – Male voice, English/Hindi/العربية</p>
-    <div class="chat-area" id="chatArea">
-      <div class="message assistant">Hello! Press and hold the microphone to talk.</div>
-    </div>
-    <button id="micButton" class="mic-btn"> Hold to talk</button>
-    <div class="status" id="status"> Ready</div>
-    <details>
-      <summary>⚙️ Choose language</summary>
-      <select id="languageSelect">
-        <option value="en-US">English (US)</option>
-        <option value="hi-IN">हिन्दी (Hindi)</option>
-        <option value="ar-AE">العربية (Gulf Arabic)</option>
-      </select>
-    </details>
+  <!-- Language Context (will switch HTML dir and lang) -->
+  <div id="languageToggle" class="language-toggle">
+    <button data-lang="en-US" class="lang-btn active">EN</button>
+    <button data-lang="ar-AE" class="lang-btn">AR</button>
+    <button data-lang="hi-IN" class="lang-btn">HI</button>
   </div>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Left Sidebar - Interview Setup -->
+    <aside class="setup-panel">
+      <div class="setup-header">
+        <h2>Interview Setup</h2>
+        <span class="badge">HR Tool</span>
+      </div>
+
+      <!-- Step 1: Candidate Info -->
+      <div class="setup-section">
+        <label class="section-label">
+          <span class="step-number">1</span>
+          <span data-text="candidateName">Candidate Name</span>
+        </label>
+        <input type="text" id="candidateName" placeholder="Full name" class="input-field" />
+      </div>
+
+      <!-- Step 2: Role Selection -->
+      <div class="setup-section">
+        <label class="section-label">
+          <span class="step-number">2</span>
+          <span data-text="position">Position Applied For</span>
+        </label>
+        <select id="roleSelect" class="input-field">
+          <option value="">Select role...</option>
+          <option value="ui-ux-designer">UI/UX Designer</option>
+          <option value="frontend-engineer">Frontend Engineer</option>
+          <option value="product-manager">Product Manager</option>
+          <option value="sales-executive">Sales Executive</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <!-- Step 3: Question Selection -->
+      <div class="setup-section">
+        <label class="section-label">
+          <span class="step-number">3</span>
+          <span data-text="interviewMode">Interview Mode</span>
+        </label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="mode" value="structured" checked />
+            <span data-text="structured">Structured (5 Questions)</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="mode" value="freeform" />
+            <span data-text="freeform">Free-form Conversation</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Start Button -->
+      <button id="startInterviewBtn" class="btn btn-primary btn-full">
+        <span data-text="startInterview">Start Interview</span>
+      </button>
+
+      <!-- Support Section -->
+      <div class="support-section">
+        <p class="support-title" data-text="support">Support</p>
+        <p class="support-text" data-text="supportText">Need help? Your answers are kept confidential and secure.</p>
+      </div>
+    </aside>
+
+    <!-- Right Panel - Interview Area -->
+    <main class="interview-panel">
+      <!-- Header -->
+      <header class="interview-header">
+        <div class="header-left">
+          <h1 id="headerTitle" data-text="interviewSession">Interview Session</h1>
+          <p id="candidateDisplay" class="candidate-badge"></p>
+        </div>
+        <div class="header-right">
+          <div class="progress-indicator">
+            <span id="questionCounter" class="counter">Q 0/0</span>
+            <div class="progress-bar">
+              <div id="progressFill" class="progress-fill"></div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Interview Content -->
+      <div class="interview-content">
+        <!-- Welcome State -->
+        <div id="welcomeState" class="state-container active">
+          <div class="welcome-box">
+            <h2 data-text="welcome">Welcome to InterviewPro HR</h2>
+            <p data-text="welcomeText">This is an AI-powered interview platform designed for professional candidate assessment.</p>
+            <ul class="feature-list">
+              <li data-text="feature1">✓ Multi-language support (English, Arabic, Hindi)</li>
+              <li data-text="feature2">✓ Real-time voice recognition and AI-powered responses</li>
+              <li data-text="feature3">✓ Complete interview history and transcripts</li>
+              <li data-text="feature4">✓ Enterprise-grade security & confidentiality</li>
+            </ul>
+            <p class="welcome-hint" data-text="welcomeHint">Please configure the interview settings on the left to begin.</p>
+          </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div id="chatState" class="state-container">
+          <div id="chatArea" class="chat-area">
+            <!-- Messages will be added here dynamically -->
+          </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+          <div class="voice-input-area">
+            <button id="micButton" class="mic-button" title="Hold to record">
+              <span class="mic-icon">🎤</span>
+              <span id="micLabel" data-text="holdToTalk">Hold to talk</span>
+            </button>
+            <div class="input-alternative">
+              <textarea id="textInput" class="text-input" placeholder="Or type your response..." rows="2"></textarea>
+              <button id="submitTextBtn" class="btn btn-secondary" data-text="send">Send</button>
+            </div>
+          </div>
+
+          <!-- Status & Info -->
+          <div class="status-bar">
+            <div id="status" class="status-indicator">
+              <span class="status-dot"></span>
+              <span class="status-text" data-text="ready">Ready</span>
+            </div>
+            <div class="voice-timer" id="voiceTimer"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <footer class="interview-footer">
+        <button id="exitInterviewBtn" class="btn btn-secondary" data-text="endInterview">End Interview</button>
+        <button id="saveTranscriptBtn" class="btn btn-outline" data-text="saveTranscript">Save Transcript</button>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Language Setting (Hidden) -->
+  <input type="hidden" id="currentLanguage" value="en-US" />
+
   <script src="script.js"></script>
 </body>
 </html>

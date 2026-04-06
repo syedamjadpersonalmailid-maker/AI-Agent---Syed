@@ -1,139 +1,531 @@
-// ========== YOUR PORTFOLIO DATA (EDIT THIS!) ==========
+// ========== INTERVIEW PRO HR - PROFESSIONAL AI INTERVIEW PLATFORM ==========
+
+// ========== LOCALIZATION STRINGS ==========
+const translations = {
+  'en-US': {
+    candidateName: 'Candidate Name',
+    position: 'Position Applied For',
+    interviewMode: 'Interview Mode',
+    structured: 'Structured (5 Questions)',
+    freeform: 'Free-form Conversation',
+    startInterview: 'Start Interview',
+    support: 'Support',
+    supportText: 'Need help? Your answers are kept confidential and secure.',
+    interviewSession: 'Interview Session',
+    welcome: 'Welcome to InterviewPro HR',
+    welcomeText: 'This is an AI-powered interview platform designed for professional candidate assessment.',
+    feature1: '✓ Multi-language support (English, Arabic, Hindi)',
+    feature2: '✓ Real-time voice recognition and AI-powered responses',
+    feature3: '✓ Complete interview history and transcripts',
+    feature4: '✓ Enterprise-grade security & confidentiality',
+    welcomeHint: 'Please configure the interview settings on the left to begin.',
+    holdToTalk: 'Hold to talk',
+    ready: 'Ready',
+    send: 'Send',
+    endInterview: 'End Interview',
+    saveTranscript: 'Save Transcript',
+    listeningState: 'Listening...',
+    processingState: 'Processing...',
+    speakingState: 'Speaking...',
+    errorState: 'Error',
+    noMicSupport: '✖ Microphone not supported on this browser',
+  },
+  'ar-AE': {
+    candidateName: 'اسم المرشح',
+    position: 'الوظيفة المتقدم إليها',
+    interviewMode: 'وضع المقابلة',
+    structured: 'مقابلة منظمة (5 أسئلة)',
+    freeform: 'محادثة حرة',
+    startInterview: 'بدء المقابلة',
+    support: 'الدعم',
+    supportText: 'هل تحتاج إلى مساعدة؟ إجاباتك محمية وسرية.',
+    interviewSession: 'جلسة المقابلة',
+    welcome: 'مرحبا بك في InterviewPro HR',
+    welcomeText: 'منصة مقابلات مدعومة بالذكاء الاصطناعي مصممة لتقييم المرشحين بشكل احترافي.',
+    feature1: '✓ دعم متعدد اللغات (الإنجليزية والعربية والهندية)',
+    feature2: '✓ التعرف على الكلام في الوقت الفعلي والردود المدعومة بالذكاء الاصطناعي',
+    feature3: '✓ سجل كامل للمقابلات والنسخ المكتوبة',
+    feature4: '✓ أمان وسرية على مستوى المؤسسات',
+    welcomeHint: 'يرجى تكوين إعدادات المقابلة على اليسار للبدء.',
+    holdToTalk: 'اضغط للتحدث',
+    ready: 'جاهز',
+    send: 'إرسال',
+    endInterview: 'إنهاء المقابلة',
+    saveTranscript: 'حفظ النسخة المكتوبة',
+    listeningState: 'استماع...',
+    processingState: 'معالجة...',
+    speakingState: 'يتحدث...',
+    errorState: 'خطأ',
+    noMicSupport: '✖ الميكروفون غير مدعوم في المتصفح الحالي',
+  },
+  'hi-IN': {
+    candidateName: 'उम्मीदवार का नाम',
+    position: 'आवेदन किए गए पद',
+    interviewMode: 'साक्षात्कार मोड',
+    structured: 'संरचित साक्षात्कार (5 प्रश्न)',
+    freeform: 'मुक्त संवाद',
+    startInterview: 'साक्षात्कार शुरू करें',
+    support: 'समर्थन',
+    supportText: 'सहायता चाहिए? आपके उत्तर सुरक्षित और गोपनीय हैं।',
+    interviewSession: 'साक्षात्कार सेशन',
+    welcome: 'InterviewPro HR में आपका स्वागत है',
+    welcomeText: 'एक AI-संचालित साक्षात्कार मंच जो पेशेवर उम्मीदवार मूल्यांकन के लिए डिज़ाइन किया गया है।',
+    feature1: '✓ बहु-भाषा समर्थन (अंग्रेजी, अरबी, हिंदी)',
+    feature2: '✓ वास्तविक समय में बोली जाने वाली पहचान और AI-संचालित प्रतिक्रियाएं',
+    feature3: '✓ पूर्ण साक्षात्कार इतिहास और प्रतिलेख',
+    feature4: '✓ एंटरप्राइज-ग्रेड सुरक्षा और गोपनीयता',
+    welcomeHint: 'शुरू करने के लिए बाईं ओर साक्षात्कार सेटिंग्स कॉन्फ़िगर करें।',
+    holdToTalk: 'बोलने के लिए दबाएं',
+    ready: 'तैयार',
+    send: 'भेजें',
+    endInterview: 'साक्षात्कार समाप्त करें',
+    saveTranscript: 'प्रतिलेख सहेजें',
+    listeningState: 'सुनना जारी है...',
+    processingState: 'प्रोसेसिंग...',
+    speakingState: 'बोल रहे हैं...',
+    errorState: 'त्रुटि',
+    noMicSupport: '✖ इस ब्राउज़र में माइक्रोफोन समर्थित नहीं है',
+  }
+};
+
+// ========== PORTFOLIO CONTEXT FOR AI ==========
 const portfolioContext = `
-"You are a helpful, professional voice assistant and career advocate for Syed Amjad. 
-Your goal is to represent Syed to HR managers and Design Leads. 
-Answer questions concisely based ONLY on the following information:
+"You are a professional HR Interview Assistant conducting structured interviews for candidates.
+Your role is to evaluate candidates fairly, ask clarifying follow-up questions, and assess their fit for the role.
+Maintain a professional, respectful tone at all times.
 
-About Me: 
-- Name: Syed Amjad
-- Job Title: UI/UX Designer (with a background in Sales and Vibe coding development)
-- Location: Bangalore, India (Ready for immediate relocation to the UAE)
-- Bio: Syed is a business-minded designer with 3+ years of experience. He performed a strategic pivot from Sales to UI/UX, which allows him to design products that aren't just beautiful but also drive ROI and conversion. He focuses on a 'Holistic Approach' that balances Business Logic, Technical Feasibility, and User Empathy.
+About Our Company Process:
+- We conduct professional, confidential interviews
+- We value honesty, enthusiasm, and problem-solving mindset
+- Questions should be challenging but fair
+- Always provide constructive feedback
 
-Technical Skills: 
-- Design: Figma (100% proficiency), Wireframing (100%), Design Systems, Prototyping.
-- No-Code Deployment: Expert in Framer and Wix Studio for rapid high-fidelity shipping.
-- Code & Logic: Bachelor of Computer Applications (BCA) with a 40-hour Full-Stack Java certification. Proficient in React and Tailwind CSS.
-- UX Methods: User Research, Usability Testing, Information Architecture, and Empathy Mapping.
+Candidate Context:
+This interview is conducted by InterviewPro HR - a professional assessment platform.
+Keep responses concise (max 3 sentences per turn) and focus on evaluation rather than selling.
+If you don't understand a response, ask clarifying questions.
+Maintain professional neutrality.";
+`;
 
-Portfolio Projects (Core Focus):
-- IOTSecure Monitor: A high-density Security & Infrastructure dashboard designed for 24/7 monitoring and data clarity.
-- FlowOps AI: An enterprise-grade workflow management ecosystem. Optimized for scaling complex structural logic into seamless user flows.
-- Finspring: A high-trust Fintech/Digital Banking site focusing on secure financial flows and scalable UI systems.
+// ========== STATE MANAGEMENT ==========
+let state = {
+  currentLanguage: 'en-US',
+  isInterviewActive: false,
+  isListening: false,
+  candidateName: '',
+  selectedRole: '',
+  interviewMode: 'structured',
+  questionCount: 0,
+  transcript: [],
+  recognition: null,
+  recordingTime: 0,
+  timerInterval: null,
+};
 
-Professional Experience:
-- Lead UI/UX Designer at AvadheshCo (Present): Driving business consulting and brand landing experiences for early-stage startups.
-- Lead UI/UX Designer at TechEnhance (2024 - 2025): Spearheaded design for AI chatbots, Fintech apps, and IoT platforms.
-- UI/UX Designer at Brain Quest (2023 - 2024): Collaborated with UAE-based teams on enterprise dashboard projects.
-- Sales Executive & Manager (2020 - 2023): Gained deep insights into client psychology and business conversion goals.
+// ========== DOM ELEMENTS ==========
+const els = {
+  languageToggle: document.querySelectorAll('.lang-btn'),
+  startBtn: document.getElementById('startInterviewBtn'),
+  exitBtn: document.getElementById('exitInterviewBtn'),
+  saveBtn: document.getElementById('saveTranscriptBtn'),
+  micBtn: document.getElementById('micButton'),
+  submitTextBtn: document.getElementById('submitTextBtn'),
+  candidateInput: document.getElementById('candidateName'),
+  roleSelect: document.getElementById('roleSelect'),
+  chatArea: document.getElementById('chatArea'),
+  textInput: document.getElementById('textInput'),
+  welcomeState: document.getElementById('welcomeState'),
+  chatState: document.getElementById('chatState'),
+  status: document.getElementById('status'),
+  statusText: document.querySelector('.status-text'),
+  statusDot: document.querySelector('.status-dot'),
+  voiceTimer: document.getElementById('voiceTimer'),
+  setupPanel: document.querySelector('.setup-panel'),
+  candidateDisplay: document.getElementById('candidateDisplay'),
+  questionCounter: document.getElementById('questionCounter'),
+  progressFill: document.getElementById('progressFill'),
+  micLabel: document.getElementById('micLabel'),
+};
 
-Education & Certifications:
-- Bachelor of Computer Application (BCA), SVR College (2017-2020).
-- UI UX Design Certification, Designerrs Academy (2023).
-- Full-Stack Java Certification: Specialized in OOP, JS, and data handling logic.
+// ========== LOCALIZATION SYSTEM ==========
+function t(key) {
+  return translations[state.currentLanguage]?.[key] || translations['en-US'][key] || key;
+}
 
-Key Career Metrics:
-- 35+ Projects Shipped
-- 28+ International Clients Partnered
-- 3+ Years of experience in AI, Fintech, and SaaS.
+function updateAllText() {
+  document.querySelectorAll('[data-text]').forEach(el => {
+    const key = el.getAttribute('data-text');
+    el.textContent = t(key);
+  });
+}
 
-Contact & Social:
-- Email: syed.uiuxdesigner@gmail.com
-- Phone: +91 8546875458
-- Portfolio: https://syedamjadsh.netlify.app/
-- LinkedIn: https://www.linkedin.com/in/syedamjad-designer/
+function setLanguage(lang) {
+  state.currentLanguage = lang;
+  
+  // Update HTML lang & dir attributes
+  const htmlDir = lang === 'ar-AE' ? 'rtl' : 'ltr';
+  document.documentElement.lang = lang;
+  document.documentElement.dir = htmlDir;
+  
+  // Update language toggle UI
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  
+  // Update all localized text
+  updateAllText();
+  
+  // Update speech recognition language
+  if (state.recognition) {
+    state.recognition.lang = lang;
+  }
+}
 
-Languages: English, Hindi, Professional awareness of Gulf Market design standards.
+// ========== INTERVIEW FLOW ==========
+function startInterview() {
+  const candidateName = els.candidateInput.value.trim();
+  const role = els.roleSelect.value;
+  
+  if (!candidateName) {
+    alert(t('candidateName') + ' is required');
+    return;
+  }
+  
+  if (!role) {
+    alert(t('position') + ' is required');
+    return;
+  }
+  
+  state.candidateName = candidateName;
+  state.selectedRole = role;
+  state.isInterviewActive = true;
+  state.questionCount = 0;
+  state.transcript = [];
+  
+  // Update UI
+  els.welcomeState.classList.remove('active');
+  els.chatState.classList.add('active');
+  els.chatArea.innerHTML = '';
+  els.candidateDisplay.textContent = `${candidateName} • ${role}`;
+  els.setupPanel.style.pointerEvents = 'none';
+  els.setupPanel.style.opacity = '0.5';
+  
+  // Add welcome message
+  addMessage(t('welcome') + ' - ' + candidateName, 'assistant');
+  state.transcript.push({ sender: 'assistant', text: t('welcome') });
+  
+  // Get first question
+  askNextQuestion();
+}
 
-Interaction Style:
-- Keep answers professional, enthusiastic, and under 3 sentences. 
-- If someone asks why they should hire Syed, emphasize his 'Sales-to-Design' pivot and his ability to collaborate directly with developers because he understands code.";
+function askNextQuestion() {
+  state.questionCount++;
+  const questions = [
+    'Tell me about your most recent professional experience and what you learned from it.',
+    'How do you approach problem-solving when faced with unfamiliar challenges?',
+    'Describe a time when you had to collaborate with a difficult team member. How did you handle it?',
+    'What motivates you to pursue this role, and how do your skills align with it?',
+    'Where do you see yourself in 3-5 years, and how will this role help you get there?'
+  ];
+  
+  const questionIndex = Math.min(state.questionCount - 1, questions.length - 1);
+  const question = questions[questionIndex];
+  
+  addMessage(question, 'assistant');
+  state.transcript.push({ sender: 'assistant', text: question });
+  updateProgressBar();
+  
+  // Speak the question
+  speakText(question);
+}
 
-// ========== NO NEED TO EDIT BELOW THIS LINE ==========
-let recognition = null;
-let isListening = false;
-let selectedLanguage = 'en-US';
+function updateProgressBar() {
+  const progress = (state.questionCount / 5) * 100;
+  els.progressFill.style.width = progress + '%';
+  els.questionCounter.textContent = `Q ${state.questionCount}/5`;
+}
 
-const micBtn = document.getElementById('micButton');
-const statusDiv = document.getElementById('status');
-const chatArea = document.getElementById('chatArea');
-const languageSelect = document.getElementById('languageSelect');
+function endInterview() {
+  state.isInterviewActive = false;
+  els.welcomeState.classList.add('active');
+  els.chatState.classList.remove('active');
+  els.setupPanel.style.pointerEvents = 'auto';
+  els.setupPanel.style.opacity = '1';
+  els.candidateDisplay.textContent = '';
+  
+  // Stop any ongoing speech
+  window.speechSynthesis.cancel();
+}
 
+function saveTranscript() {
+  const transcriptText = state.transcript
+    .map(item => `${item.sender.toUpperCase()}: ${item.text}`)
+    .join('\n\n');
+  
+  const fullTranscript = `
+INTERVIEW TRANSCRIPT
+====================
+Candidate: ${state.candidateName}
+Role: ${state.selectedRole}
+Language: ${state.currentLanguage}
+Date: ${new Date().toLocaleString()}
+
+${transcriptText}
+`;
+  
+  const blob = new Blob([fullTranscript], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `interview_${state.candidateName}_${Date.now()}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ========== UI MESSAGING ==========
 function addMessage(text, sender) {
   const msgDiv = document.createElement('div');
   msgDiv.className = `message ${sender}`;
   msgDiv.textContent = text;
-  chatArea.appendChild(msgDiv);
-  chatArea.scrollTop = chatArea.scrollHeight;
+  els.chatArea.appendChild(msgDiv);
+  els.chatArea.scrollTop = els.chatArea.scrollHeight;
 }
 
-function speakResponse(text, lang) {
-  if (window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+function updateStatus(statusName) {
+  const statuses = {
+    ready: { dot: 'ready', text: t('ready') },
+    listening: { dot: 'listening', text: t('listeningState') },
+    processing: { dot: 'processing', text: t('processingState') },
+    speaking: { dot: 'processing', text: t('speakingState') },
+    error: { dot: 'error', text: t('errorState') }
+  };
+  
+  const status = statuses[statusName] || statuses.ready;
+  els.statusText.textContent = status.text;
+  els.statusDot.className = `status-dot ${status.dot}`;
+  
+  if (statusName === 'listening') {
+    els.micBtn.classList.add('recording');
+    startRecordingTimer();
+  } else {
+    els.micBtn.classList.remove('recording');
+    stopRecordingTimer();
+  }
+}
+
+function startRecordingTimer() {
+  state.recordingTime = 0;
+  state.timerInterval = setInterval(() => {
+    state.recordingTime++;
+    const mins = Math.floor(state.recordingTime / 60);
+    const secs = state.recordingTime % 60;
+    els.voiceTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+  }, 1000);
+}
+
+function stopRecordingTimer() {
+  if (state.timerInterval) {
+    clearInterval(state.timerInterval);
+    els.voiceTimer.textContent = '';
+  }
+}
+
+// ========== SPEECH SYNTHESIS ==========
+function speakText(text) {
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+  }
+  
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = lang;
-  utterance.rate = 0.9;
-  // Choose a male voice if available
+  utterance.lang = state.currentLanguage;
+  utterance.rate = 0.95;
+  
   const setVoice = () => {
     const voices = window.speechSynthesis.getVoices();
-    let male = voices.find(v => v.lang.startsWith(lang.split('-')[0]) && v.name.toLowerCase().includes('male'));
-    if (male) utterance.voice = male;
+    const lang = state.currentLanguage.split('-')[0];
+    let voiceFound = voices.find(v => 
+      v.lang.startsWith(lang) && 
+      (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('man'))
+    );
+    if (voiceFound) utterance.voice = voiceFound;
     window.speechSynthesis.speak(utterance);
   };
-  if (window.speechSynthesis.getVoices().length) setVoice();
-  else window.speechSynthesis.onvoiceschanged = setVoice;
-}
-
-async function callBackend(userMessage, lang) {
-  const response = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: userMessage, language: lang, context: portfolioContext })
-  });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error || 'Backend error');
-  return data.reply;
-}
-
-async function processVoice(transcript) {
-  addMessage(transcript, 'user');
-  statusDiv.textContent = '● Thinking...';
-  try {
-    const aiReply = await callBackend(transcript, selectedLanguage);
-    addMessage(aiReply, 'assistant');
-    statusDiv.textContent = '● Speaking...';
-    speakResponse(aiReply, selectedLanguage);
-    setTimeout(() => { if (!window.speechSynthesis.speaking) statusDiv.textContent = '● Ready'; }, 500);
-  } catch (err) {
-    addMessage(`Error: ${err.message}`, 'assistant');
-    statusDiv.textContent = '● Error';
-    setTimeout(() => statusDiv.textContent = '● Ready', 2000);
+  
+  updateStatus('speaking');
+  
+  utterance.onend = () => {
+    if (state.isInterviewActive) {
+      updateStatus('ready');
+    }
+  };
+  
+  if (window.speechSynthesis.getVoices().length) {
+    setVoice();
+  } else {
+    window.speechSynthesis.onvoiceschanged = setVoice;
   }
 }
 
-function initSpeech() {
+// ========== SPEECH RECOGNITION ==========
+function initSpeechRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
   if (!SpeechRecognition) {
-    statusDiv.textContent = '✖ Browser not supported';
+    updateStatus('error');
+    els.statusText.textContent = t('noMicSupport');
     return null;
   }
-  const recog = new SpeechRecognition();
-  recog.continuous = false;
-  recog.interimResults = false;
-  recog.lang = selectedLanguage;
-  recog.onstart = () => { isListening = true; statusDiv.textContent = '● Listening...'; micBtn.style.background = '#ef4444'; };
-  recog.onerror = (e) => { statusDiv.textContent = `● Error: ${e.error}`; isListening = false; micBtn.style.background = '#1e293b'; };
-  recog.onend = () => { isListening = false; micBtn.style.background = '#1e293b'; if (statusDiv.textContent === '● Listening...') statusDiv.textContent = '● Ready'; };
-  recog.onresult = (e) => { const text = e.results[0][0].transcript; if (text.trim()) processVoice(text); };
-  return recog;
+  
+  const recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = state.currentLanguage;
+  
+  recognition.onstart = () => {
+    state.isListening = true;
+    updateStatus('listening');
+  };
+  
+  recognition.onerror = (e) => {
+    updateStatus('error');
+    console.error('Speech recognition error:', e.error);
+  };
+  
+  recognition.onend = () => {
+    state.isListening = false;
+    updateStatus('ready');
+  };
+  
+  recognition.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    if (text.trim()) {
+      processUserInput(text);
+    }
+  };
+  
+  return recognition;
 }
 
-// Push-to-talk
+async function processUserInput(userText) {
+  updateStatus('processing');
+  
+  // Add user message
+  addMessage(userText, 'user');
+  state.transcript.push({ sender: 'user', text: userText });
+  els.textInput.value = '';
+  
+  try {
+    // Call backend for AI response
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: userText,
+        language: state.currentLanguage,
+        context: portfolioContext,
+        candidateName: state.candidateName,
+        role: state.selectedRole
+      })
+    });
+    
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Backend error');
+    
+    const aiReply = data.reply;
+    addMessage(aiReply, 'assistant');
+    state.transcript.push({ sender: 'assistant', text: aiReply });
+    
+    // Speak the response
+    speakText(aiReply);
+    
+    // After response, ask next question if in structured mode and less than 5 questions
+    if (state.interviewMode === 'structured' && state.questionCount < 5) {
+      setTimeout(() => {
+        askNextQuestion();
+      }, 2000);
+    } else {
+      updateStatus('ready');
+    }
+  } catch (err) {
+    addMessage('Error: ' + err.message, 'system');
+    updateStatus('error');
+    console.error(err);
+  }
+}
+
+// ========== EVENT LISTENERS ==========
+
+// Language toggle
+els.languageToggle.forEach(btn => {
+  btn.addEventListener('click', () => {
+    setLanguage(btn.dataset.lang);
+  });
+});
+
+// Interview controls
+els.startBtn.addEventListener('click', startInterview);
+els.exitBtn.addEventListener('click', endInterview);
+els.saveBtn.addEventListener('click', saveTranscript);
+
+// Microphone button (push-to-talk)
 let pressTimer;
-micBtn.addEventListener('mousedown', () => { pressTimer = setTimeout(() => { if (!recognition) recognition = initSpeech(); recognition.lang = selectedLanguage; recognition.start(); }, 50); });
-micBtn.addEventListener('mouseup', () => { clearTimeout(pressTimer); if (isListening) recognition.stop(); });
-micBtn.addEventListener('touchstart', (e) => { e.preventDefault(); pressTimer = setTimeout(() => { if (!recognition) recognition = initSpeech(); recognition.lang = selectedLanguage; recognition.start(); }, 50); });
-micBtn.addEventListener('touchend', (e) => { e.preventDefault(); clearTimeout(pressTimer); if (isListening) recognition.stop(); });
+els.micBtn.addEventListener('mousedown', () => {
+  pressTimer = setTimeout(() => {
+    if (!state.recognition) state.recognition = initSpeechRecognition();
+    if (state.recognition && state.isInterviewActive) {
+      state.recognition.lang = state.currentLanguage;
+      state.recognition.start();
+    }
+  }, 50);
+});
 
-languageSelect.addEventListener('change', (e) => { selectedLanguage = e.target.value; if (recognition) recognition.lang = selectedLanguage; statusDiv.textContent = `● Language: ${e.target.options[e.target.selectedIndex].text}`; setTimeout(() => { if (statusDiv.textContent.includes('Language')) statusDiv.textContent = '● Ready'; }, 1500); });
+els.micBtn.addEventListener('mouseup', () => {
+  clearTimeout(pressTimer);
+  if (state.isListening && state.recognition) {
+    state.recognition.stop();
+  }
+});
 
-window.addEventListener('load', () => { recognition = initSpeech(); });
+els.micBtn.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  pressTimer = setTimeout(() => {
+    if (!state.recognition) state.recognition = initSpeechRecognition();
+    if (state.recognition && state.isInterviewActive) {
+      state.recognition.lang = state.currentLanguage;
+      state.recognition.start();
+    }
+  }, 50);
+});
+
+els.micBtn.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  clearTimeout(pressTimer);
+  if (state.isListening && state.recognition) {
+    state.recognition.stop();
+  }
+});
+
+// Text input fallback
+els.submitTextBtn.addEventListener('click', () => {
+  const text = els.textInput.value.trim();
+  if (text && state.isInterviewActive) {
+    processUserInput(text);
+  }
+});
+
+els.textInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey && state.isInterviewActive) {
+    e.preventDefault();
+    els.submitTextBtn.click();
+  }
+});
+
+// ========== INITIALIZATION ==========
+window.addEventListener('load', () => {
+  setLanguage('en-US');
+  updateStatus('ready');
+  updateAllText();
+  state.recognition = initSpeechRecognition();
+});
