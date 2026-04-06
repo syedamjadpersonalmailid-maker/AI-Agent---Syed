@@ -16,13 +16,15 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Missing API key on server' });
   }
 
-  const MODEL = 'llama3.2';  // you can change to 'qwen2.5' or 'mistral'
+  const MODEL = 'kimi-k2:1t';
+// or
+// const MODEL = 'qwen3-vl:235b';
 
   // Build system prompt with your portfolio data
   const systemPrompt = `${context}\n\nRespond in ${language === 'hi-IN' ? 'Hindi' : (language === 'ar-AE' ? 'Gulf Arabic' : 'English')}. Keep answers concise.`;
 
   try {
-    const response = await fetch('https://api.ollama.com/v1/chat/completions', {
+    const response = await fetch('https://ollama.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
