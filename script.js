@@ -47,7 +47,7 @@ Languages: English, Hindi, Professional awareness of Gulf Market design standard
 
 Interaction Style:
 - Keep answers professional, enthusiastic, and under 3 sentences. 
-- If someone asks why they should hire Syed, emphasize his 'Sales-to-Design' pivot and his ability to collaborate directly with developers because he understands code."
+- If someone asks why they should hire Syed, emphasize his 'Sales-to-Design' pivot and his ability to collaborate directly with developers because he understands code.";
 
 // ========== NO NEED TO EDIT BELOW THIS LINE ==========
 let recognition = null;
