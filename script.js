@@ -116,6 +116,7 @@ let state = {
   selectedRole: '',
   interviewMode: 'structured',
   questionCount: 0,
+  awaitingAnswer: false,   // true after a question is asked, waiting for user reply
   transcript: [],
   recognition: null,
   recordingTime: 0,
@@ -196,10 +197,15 @@ function startInterview() {
     return;
   }
   
+  // Read interview mode from DOM (radio buttons)
+  const modeRadio = document.querySelector('input[name="mode"]:checked');
+  state.interviewMode = modeRadio ? modeRadio.value : 'structured';
+
   state.candidateName = candidateName;
   state.selectedRole = role;
   state.isInterviewActive = true;
   state.questionCount = 0;
+  state.awaitingAnswer = false;
   state.transcript = [];
   
   // Update UI
@@ -219,7 +225,6 @@ function startInterview() {
 }
 
 function askNextQuestion() {
-  state.questionCount++;
   const questions = [
     'Tell me about your most recent professional experience and what you learned from it.',
     'How do you approach problem-solving when faced with unfamiliar challenges?',
@@ -227,14 +232,25 @@ function askNextQuestion() {
     'What motivates you to pursue this role, and how do your skills align with it?',
     'Where do you see yourself in 3-5 years, and how will this role help you get there?'
   ];
-  
-  const questionIndex = Math.min(state.questionCount - 1, questions.length - 1);
-  const question = questions[questionIndex];
-  
+
+  if (state.questionCount >= questions.length) {
+    // All questions answered — close out
+    const closingMessage = 'Thank you for your time. The interview is now complete. You may save the transcript below.';
+    addMessage(closingMessage, 'assistant');
+    state.transcript.push({ sender: 'assistant', text: closingMessage });
+    state.awaitingAnswer = false;
+    speakText(closingMessage);
+    return;
+  }
+
+  const question = questions[state.questionCount];
+  state.questionCount++;
+  state.awaitingAnswer = true;
+
   addMessage(question, 'assistant');
   state.transcript.push({ sender: 'assistant', text: question });
   updateProgressBar();
-  
+
   // Speak the question
   speakText(question);
 }
@@ -437,21 +453,25 @@ async function processUserInput(userText) {
     addMessage(aiReply, 'assistant');
     state.transcript.push({ sender: 'assistant', text: aiReply });
     
-    // Speak the response
+    // Speak the AI acknowledgement, then ask the next question
+    state.awaitingAnswer = false;
     speakText(aiReply);
-    
-    // After response, ask next question if in structured mode and less than 5 questions
-    if (state.interviewMode === 'structured' && state.questionCount < 5) {
-      setTimeout(() => {
-        askNextQuestion();
-      }, 2000);
+
+    // Only advance to next question in structured mode after speaking the reply
+    if (state.interviewMode === 'structured') {
+      const utterance = new SpeechSynthesisUtterance(aiReply);
+      utterance.onend = () => {
+        setTimeout(() => {
+          askNextQuestion();
+        }, 800);
+      };
     } else {
       updateStatus('ready');
     }
   } catch (err) {
     addMessage('Error: ' + err.message, 'system');
     updateStatus('error');
-    console.error(err);
+    console.error('[v0] processUserInput error:', err);
   }
 }
 
@@ -471,52 +491,64 @@ els.saveBtn.addEventListener('click', saveTranscript);
 
 // Microphone button (push-to-talk)
 let pressTimer;
-els.micBtn.addEventListener('mousedown', () => {
-  pressTimer = setTimeout(() => {
-    if (!state.recognition) state.recognition = initSpeechRecognition();
-    if (state.recognition && state.isInterviewActive) {
-      state.recognition.lang = state.currentLanguage;
-      state.recognition.start();
-    }
-  }, 50);
-});
 
-els.micBtn.addEventListener('mouseup', () => {
+function tryStartRecording() {
+  if (!state.isInterviewActive) {
+    // Show a clear message instead of silently failing
+    els.statusText.textContent = 'Start the interview first';
+    els.statusDot.className = 'status-dot error';
+    setTimeout(() => updateStatus('ready'), 2500);
+    return;
+  }
+  if (!state.recognition) state.recognition = initSpeechRecognition();
+  if (state.recognition) {
+    state.recognition.lang = state.currentLanguage;
+    try {
+      state.recognition.start();
+    } catch (e) {
+      // Recognition already started — ignore
+    }
+  }
+}
+
+function tryStopRecording() {
   clearTimeout(pressTimer);
   if (state.isListening && state.recognition) {
     state.recognition.stop();
   }
+}
+
+els.micBtn.addEventListener('mousedown', () => {
+  pressTimer = setTimeout(tryStartRecording, 50);
 });
+
+els.micBtn.addEventListener('mouseup', tryStopRecording);
 
 els.micBtn.addEventListener('touchstart', (e) => {
   e.preventDefault();
-  pressTimer = setTimeout(() => {
-    if (!state.recognition) state.recognition = initSpeechRecognition();
-    if (state.recognition && state.isInterviewActive) {
-      state.recognition.lang = state.currentLanguage;
-      state.recognition.start();
-    }
-  }, 50);
+  pressTimer = setTimeout(tryStartRecording, 50);
 });
 
 els.micBtn.addEventListener('touchend', (e) => {
   e.preventDefault();
-  clearTimeout(pressTimer);
-  if (state.isListening && state.recognition) {
-    state.recognition.stop();
-  }
+  tryStopRecording();
 });
 
 // Text input fallback
 els.submitTextBtn.addEventListener('click', () => {
   const text = els.textInput.value.trim();
-  if (text && state.isInterviewActive) {
-    processUserInput(text);
+  if (!text) return;
+  if (!state.isInterviewActive) {
+    els.statusText.textContent = 'Start the interview first';
+    els.statusDot.className = 'status-dot error';
+    setTimeout(() => updateStatus('ready'), 2500);
+    return;
   }
+  processUserInput(text);
 });
 
 els.textInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey && state.isInterviewActive) {
+  if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
     els.submitTextBtn.click();
   }
